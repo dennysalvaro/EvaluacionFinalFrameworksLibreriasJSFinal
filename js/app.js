@@ -222,11 +222,11 @@ function setScore(candyCount) {
 }
 
 //colocar los elementos caramelo en el tablero
-function checkBoard() {
-	fillBoard();
+function revisarTablero() {
+	llenarTablero();
 }
 
-function fillBoard() {
+function llenarTablero() {
 	var top = 6;
 	var column = $('[class^="col-"]');
 
@@ -252,7 +252,7 @@ function setValidations() {
 	validacionColumna();
 	// Si hay dulces que borrar
 	if ($('img.delete').length !== 0) {
-		deletesCandyAnimation();
+		animacionBorrarCaramelo();
 	}
 }
 
@@ -303,30 +303,30 @@ function swapCandy(event, candyDrag) {
 	candyDrop.attr('src', dragSrc);
 
 	setTimeout(function () {
-		checkBoard();
+		revisarTablero();
 		if ($('img.delete').length === 0) {
 			candyDrag.attr('src', dragSrc);
 			candyDrop.attr('src', dropSrc);
 		} else {
-			updateMoves();
+			ActualizarMovimiento();
 		}
 	}, 500);
 
 }
-function checkBoardPromise(result) {
+function revisarTableroPromise(result) {
 	if (result) {
-		checkBoard();
+		revisarTablero();
 	}
 }
-//puntuacion por cantidad de elementos en linea
-function updateMoves() {
+//puntuación por cantidad de elementos en linea
+function ActualizarMovimiento() {
 	var actualValue = Number($('#movimientos-text').text());
 	var result = actualValue += 1;
 	$('#movimientos-text').text(result);
 }
 
 //delete de los elementos por default
-function deletesCandyAnimation() {
+function animacionBorrarCaramelo() {
 	disableCandyEvents();
 	$('img.delete').effect('pulsate', 400);
 	$('img.delete').animate({
@@ -339,8 +339,8 @@ function deletesCandyAnimation() {
 		}, {
 			duration: 400,
 			complete: function () {
-				deletesCandy()
-					.then(checkBoardPromise)
+				borrarCaramelo()
+					.then(revisarTableroPromise)
 					.catch(showPromiseError);
 			},
 			queue: true
@@ -352,7 +352,7 @@ function showPromiseError(error) {
 	console.log(error);
 }
 
-function deletesCandy() {
+function borrarCaramelo() {
 	return new Promise(function (resolve, reject) {
 		if ($('img.delete').remove()) {
 			resolve(true);
@@ -366,7 +366,7 @@ function deletesCandy() {
 //punto 4 y 6. Boton reiniciar y temporizador
 //cambie mediante animaciones el aspecto de la página eliminando el tablero de juego
 // boton cambie Iniciar / reiniciar - final del Juego
-function endGame() {
+function finJuego() {
 	$('div.panel-tablero, div.time').effect('fold');
 	$('h1.main-titulo').addClass('title-over')
 		.text('Gracias por jugar!');
@@ -383,10 +383,10 @@ function iniciarJuego() {
 		if ($(this).text() === 'Reiniciar') {
 			location.reload(true);
 		}
-		checkBoard();
+		revisarTablero();
 		$(this).text('Reiniciar');
 		$('#timer').startTimer({
-			onComplete: endGame
+			onComplete: finJuego
 		})
 	});
 }
