@@ -1,5 +1,6 @@
+//Por Dennys Huaman
 //punto 1  “Match Game” debe cambiar de color indefinidamente
-function colorBlink(selector) {
+function tituloColor(selector) {
 	$(selector).animate({
 			opacity: '1',
 		}, {
@@ -30,7 +31,7 @@ function colorBlink(selector) {
 		}, {
 			step: function () {
 				$(this).css('color', 'yellow');
-				colorBlink('h1.main-titulo');
+				tituloColor('h1.main-titulo');
 			},
 			queue: true
 		});
@@ -38,14 +39,14 @@ function colorBlink(selector) {
 
 
 // Punto 2. Se deben generar los dulces aleatoriamente en el tablero, llenándolo todo al principio del juego.
-function getRandomInt(min, max) {
+function conseguirAleatorio(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // obtener filas o columnas de dulces
-function giveCandyArrays(arrayType, index) {
+function darArregloCaramelo(arrayType, index) {
 
 	var candyCol1 = $('.col-1').children();
 	var candyCol2 = $('.col-2').children();
@@ -77,13 +78,13 @@ function giveCandyArrays(arrayType, index) {
 
 // arreglos de filas
 function candyRows(index) {
-	var candyRow = giveCandyArrays('rows', index);
+	var candyRow = darArregloCaramelo('rows', index);
 	return candyRow;
 }
 
 // arreglos de colunmnas
 function candyColumns(index) {
-	var candyColumn = giveCandyArrays('columns');
+	var candyColumn = darArregloCaramelo('columns');
 	return candyColumn[index];
 }
 
@@ -234,7 +235,7 @@ function fillBoard() {
 		var candys = $(this).children().length;
 		var agrega = top - candys;
 		for (var i = 0; i < agrega; i++) {
-			var candyType = getRandomInt(1, 5);
+			var candyType = conseguirAleatorio(1, 5);
 			if (i === 0 && candys < 1) {
 				$(this).append('<img src="image/' + candyType + '.png" class="element"></img>');
 			} else {
@@ -242,7 +243,7 @@ function fillBoard() {
 			}
 		}
 	});
-	addCandyEvents();
+	agregarEventosCaramelo();
 	setValidations();
 }
 
@@ -258,7 +259,7 @@ function setValidations() {
 
 //punto 7. La interacción del usuario con el elemento dulce debe ser de drag & drop.
 //Hacer los movimientos entre caramelos
-function addCandyEvents() {
+function agregarEventosCaramelo() {
 	$('img').draggable({
 		containment: '.panel-tablero',
 		droppable: 'img',
@@ -366,7 +367,7 @@ function deletesCandy() {
 //punto 4 y 6. Boton reiniciar y temporizador
 //cambie mediante animaciones el aspecto de la página eliminando el tablero de juego
 // boton cambie Iniciar / reiniciar - final del Juego
-function endGame() {
+function finJuego() {
 	$('div.panel-tablero, div.time').effect('fold');
 	$('h1.main-titulo').addClass('title-over')
 		.text('Gracias por jugar!');
@@ -375,9 +376,9 @@ function endGame() {
 }
 
 // Cuando inicia el juego
-function initGame() {
+function iniciarJuego() {
 
-	colorBlink('h1.main-titulo');
+	tituloColor('h1.main-titulo');
 
 	$('.btn-reinicio').click(function () {
 		if ($(this).text() === 'Reiniciar') {
@@ -386,12 +387,12 @@ function initGame() {
 		checkBoard();
 		$(this).text('Reiniciar');
 		$('#timer').startTimer({
-			onComplete: endGame
+			onComplete: finJuego
 		})
 	});
 }
 
 // Prepara el juego
 $(function() {
-	initGame();
+	iniciarJuego();
 });
