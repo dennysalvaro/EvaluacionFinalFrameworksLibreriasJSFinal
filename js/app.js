@@ -1,5 +1,5 @@
 //punto 1  “Match Game” debe cambiar de color indefinidamente
-function TituloColor(selector) {
+function colorBlink(selector) {
 	$(selector).animate({
 			opacity: '1',
 		}, {
@@ -30,7 +30,7 @@ function TituloColor(selector) {
 		}, {
 			step: function () {
 				$(this).css('color', 'yellow');
-				TituloColor('h1.main-titulo');
+				colorBlink('h1.main-titulo');
 			},
 			queue: true
 		});
@@ -38,14 +38,14 @@ function TituloColor(selector) {
 
 
 // Punto 2. Se deben generar los dulces aleatoriamente en el tablero, llenándolo todo al principio del juego.
-function conseguirAleatorio(min, max) {
+function getRandomInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // obtener filas o columnas de dulces
-function darArregloCaramelo(arrayType, index) {
+function giveCandyArrays(arrayType, index) {
 
 	var candyCol1 = $('.col-1').children();
 	var candyCol2 = $('.col-2').children();
@@ -55,7 +55,7 @@ function darArregloCaramelo(arrayType, index) {
 	var candyCol6 = $('.col-6').children();
 	var candyCol7 = $('.col-7').children();
 
-	var ColumnasCaramelos = $([candyCol1, candyCol2, candyCol3, candyCol4,
+	var candyColumns = $([candyCol1, candyCol2, candyCol3, candyCol4,
 		candyCol5, candyCol6, candyCol7
 	]);
 
@@ -69,31 +69,31 @@ function darArregloCaramelo(arrayType, index) {
 	}
 
 	if (arrayType === 'columns') {
-		return ColumnasCaramelos;
+		return candyColumns;
 	} else if (arrayType === 'rows' && index !== '') {
 		return candyRow;
 	}
 }
 
 // arreglos de filas
-function filasCaramelos(index) {
-	var candyRow = darArregloCaramelo('rows', index);
+function candyRows(index) {
+	var candyRow = giveCandyArrays('rows', index);
 	return candyRow;
 }
 
 // arreglos de colunmnas
-function ColumnasCaramelos(index) {
-	var candyColumn = darArregloCaramelo('columns');
+function candyColumns(index) {
+	var candyColumn = giveCandyArrays('columns');
 	return candyColumn[index];
 }
 
 //Punto3. Verificar si hay como mínimo tres dulces del mismo tipo en línea: deben desaparecer
-function validacionColumna() {
+function columnValidation() {
 	for (var j = 0; j < 7; j++) {
 		var counter = 0;
-		var posicionCaramelo = [];
-		var extraPosicionCaramelo = [];
-		var candyColumn = ColumnasCaramelos(j);
+		var candyPosition = [];
+		var extraCandyPosition = [];
+		var candyColumn = candyColumns(j);
 		var comparisonValue = candyColumn.eq(0);
 		var gap = false;
 		for (var i = 1; i < candyColumn.length; i++) {
@@ -101,55 +101,55 @@ function validacionColumna() {
 			var srcCandy = candyColumn.eq(i).attr('src');
 
 			if (srcComparison != srcCandy) {
-				if (posicionCaramelo.length >= 3) {
+				if (candyPosition.length >= 3) {
 					gap = true;
 				} else {
-					posicionCaramelo = [];
+					candyPosition = [];
 				}
 				counter = 0;
 			} else {
 				if (counter == 0) {
 					if (!gap) {
-						posicionCaramelo.push(i - 1);
+						candyPosition.push(i - 1);
 					} else {
-						extraPosicionCaramelo.push(i - 1);
+						extraCandyPosition.push(i - 1);
 					}
 				}
 				if (!gap) {
-					posicionCaramelo.push(i);
+					candyPosition.push(i);
 				} else {
-					extraPosicionCaramelo.push(i);
+					extraCandyPosition.push(i);
 				}
 				counter += 1;
 			}
 			comparisonValue = candyColumn.eq(i);
 		}
-		if (extraPosicionCaramelo.length > 2) {
-			posicionCaramelo = $.merge(posicionCaramelo, extraPosicionCaramelo);
+		if (extraCandyPosition.length > 2) {
+			candyPosition = $.merge(candyPosition, extraCandyPosition);
 		}
-		if (posicionCaramelo.length <= 2) {
-			posicionCaramelo = [];
+		if (candyPosition.length <= 2) {
+			candyPosition = [];
 		}
-		candyCount = posicionCaramelo.length;
+		candyCount = candyPosition.length;
 		if (candyCount >= 3) {
-			deleteColumnCandy(posicionCaramelo, candyColumn);
+			deleteColumnCandy(candyPosition, candyColumn);
 			setScore(candyCount);
 		}
 	}
 }
-function deleteColumnCandy(posicionCaramelo, candyColumn) {
-	for (var i = 0; i < posicionCaramelo.length; i++) {
-		candyColumn.eq(posicionCaramelo[i]).addClass('delete');
+function deleteColumnCandy(candyPosition, candyColumn) {
+	for (var i = 0; i < candyPosition.length; i++) {
+		candyColumn.eq(candyPosition[i]).addClass('delete');
 	}
 }
 
 //Verificar si hay como mínimo tres dulces en la fila
-function validacionColumna() {
+function rowValidation() {
 	for (var j = 0; j < 6; j++) {
 		var counter = 0;
-		var posicionCaramelo = [];
-		var extraPosicionCaramelo = [];
-		var candyRow = filasCaramelos(j);
+		var candyPosition = [];
+		var extraCandyPosition = [];
+		var candyRow = candyRows(j);
 		var comparisonValue = candyRow[0];
 		var gap = false;
 		for (var i = 1; i < candyRow.length; i++) {
@@ -157,45 +157,45 @@ function validacionColumna() {
 			var srcCandy = candyRow[i].attr('src');
 
 			if (srcComparison != srcCandy) {
-				if (posicionCaramelo.length >= 3) {
+				if (candyPosition.length >= 3) {
 					gap = true;
 				} else {
-					posicionCaramelo = [];
+					candyPosition = [];
 				}
 				counter = 0;
 			} else {
 				if (counter == 0) {
 					if (!gap) {
-						posicionCaramelo.push(i - 1);
+						candyPosition.push(i - 1);
 					} else {
-						extraPosicionCaramelo.push(i - 1);
+						extraCandyPosition.push(i - 1);
 					}
 				}
 				if (!gap) {
-					posicionCaramelo.push(i);
+					candyPosition.push(i);
 				} else {
-					extraPosicionCaramelo.push(i);
+					extraCandyPosition.push(i);
 				}
 				counter += 1;
 			}
 			comparisonValue = candyRow[i];
 		}
-		if (extraPosicionCaramelo.length > 2) {
-			posicionCaramelo = $.merge(posicionCaramelo, extraPosicionCaramelo);
+		if (extraCandyPosition.length > 2) {
+			candyPosition = $.merge(candyPosition, extraCandyPosition);
 		}
-		if (posicionCaramelo.length <= 2) {
-			posicionCaramelo = [];
+		if (candyPosition.length <= 2) {
+			candyPosition = [];
 		}
-		candyCount = posicionCaramelo.length;
+		candyCount = candyPosition.length;
 		if (candyCount >= 3) {
-			deleteHorizontal(posicionCaramelo, candyRow);
+			deleteHorizontal(candyPosition, candyRow);
 			setScore(candyCount);
 		}
 	}
 }
-function deleteHorizontal(posicionCaramelo, candyRow) {
-	for (var i = 0; i < posicionCaramelo.length; i++) {
-		candyRow[posicionCaramelo[i]].addClass('delete');
+function deleteHorizontal(candyPosition, candyRow) {
+	for (var i = 0; i < candyPosition.length; i++) {
+		candyRow[candyPosition[i]].addClass('delete');
 	}
 }
 
@@ -222,11 +222,11 @@ function setScore(candyCount) {
 }
 
 //colocar los elementos caramelo en el tablero
-function revisarTablero() {
-	llenarTablero();
+function checkBoard() {
+	fillBoard();
 }
 
-function llenarTablero() {
+function fillBoard() {
 	var top = 6;
 	var column = $('[class^="col-"]');
 
@@ -234,7 +234,7 @@ function llenarTablero() {
 		var candys = $(this).children().length;
 		var agrega = top - candys;
 		for (var i = 0; i < agrega; i++) {
-			var candyType = conseguirAleatorio(1, 5);
+			var candyType = getRandomInt(1, 5);
 			if (i === 0 && candys < 1) {
 				$(this).append('<img src="image/' + candyType + '.png" class="element"></img>');
 			} else {
@@ -248,11 +248,11 @@ function llenarTablero() {
 
 // Por si hay dulces por borrar
 function setValidations() {
-	validacionColumna();
-	validacionColumna();
+	columnValidation();
+	rowValidation();
 	// Si hay dulces que borrar
 	if ($('img.delete').length !== 0) {
-		animacionBorrarCaramelo();
+		deletesCandyAnimation();
 	}
 }
 
@@ -303,30 +303,30 @@ function swapCandy(event, candyDrag) {
 	candyDrop.attr('src', dragSrc);
 
 	setTimeout(function () {
-		revisarTablero();
+		checkBoard();
 		if ($('img.delete').length === 0) {
 			candyDrag.attr('src', dragSrc);
 			candyDrop.attr('src', dropSrc);
 		} else {
-			ActualizarMovimiento();
+			updateMoves();
 		}
 	}, 500);
 
 }
-function revisarTableroPromise(result) {
+function checkBoardPromise(result) {
 	if (result) {
-		revisarTablero();
+		checkBoard();
 	}
 }
-//puntuación por cantidad de elementos en linea
-function ActualizarMovimiento() {
+//puntuacion por cantidad de elementos en linea
+function updateMoves() {
 	var actualValue = Number($('#movimientos-text').text());
 	var result = actualValue += 1;
 	$('#movimientos-text').text(result);
 }
 
 //delete de los elementos por default
-function animacionBorrarCaramelo() {
+function deletesCandyAnimation() {
 	disableCandyEvents();
 	$('img.delete').effect('pulsate', 400);
 	$('img.delete').animate({
@@ -339,8 +339,8 @@ function animacionBorrarCaramelo() {
 		}, {
 			duration: 400,
 			complete: function () {
-				borrarCaramelo()
-					.then(revisarTableroPromise)
+				deletesCandy()
+					.then(checkBoardPromise)
 					.catch(showPromiseError);
 			},
 			queue: true
@@ -352,7 +352,7 @@ function showPromiseError(error) {
 	console.log(error);
 }
 
-function borrarCaramelo() {
+function deletesCandy() {
 	return new Promise(function (resolve, reject) {
 		if ($('img.delete').remove()) {
 			resolve(true);
@@ -366,7 +366,7 @@ function borrarCaramelo() {
 //punto 4 y 6. Boton reiniciar y temporizador
 //cambie mediante animaciones el aspecto de la página eliminando el tablero de juego
 // boton cambie Iniciar / reiniciar - final del Juego
-function finJuego() {
+function endGame() {
 	$('div.panel-tablero, div.time').effect('fold');
 	$('h1.main-titulo').addClass('title-over')
 		.text('Gracias por jugar!');
@@ -375,23 +375,23 @@ function finJuego() {
 }
 
 // Cuando inicia el juego
-function iniciarJuego() {
+function initGame() {
 
-	TituloColor('h1.main-titulo');
+	colorBlink('h1.main-titulo');
 
 	$('.btn-reinicio').click(function () {
 		if ($(this).text() === 'Reiniciar') {
 			location.reload(true);
 		}
-		revisarTablero();
+		checkBoard();
 		$(this).text('Reiniciar');
 		$('#timer').startTimer({
-			onComplete: finJuego
+			onComplete: endGame
 		})
 	});
 }
 
 // Prepara el juego
 $(function() {
-	iniciarJuego();
+	initGame();
 });
